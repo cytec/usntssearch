@@ -213,23 +213,25 @@ class ApiResponses:
 				return self.generate_tvserie_nabresponse(tvrage_show)				
 			else:
 				return render_template('api_error.html')				
-		elif(self.args.has_key('cat')):
-			if((self.args['cat'].find('5030') != -1) or (self.args['cat'].find('5040') != -1)):
-				return self.generate_tvserie_nabresponse_broadcast();
-			else:
-				return render_template('api_error.html')
+        #if user searches for a query, look it up
+        elif(self.args.has_key('q')):
+            query = {'showtitle': self.args['q']}
+            return self.generate_tvserie_nabresponse(query)
+        #use userdefined category
+        elif(self.args.has_key('cat')):
+            return self.generate_tvserie_nabresponse_broadcast(self.args['cat']);
 		else:	
 			return render_template('api_default.html')
 
 	#~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
 
 
-	def generate_tvserie_nabresponse_broadcast(self):
+	def generate_tvserie_nabresponse_broadcast(self, catIDs='5040,5030'):
 		
 		addparams = dict(
 						age= '1500',
 						t='tvsearch',
-						cat='5040,5030')
+						cat=catIDs)
 		
 		rawResults = SearchModule.performSearch('', self.cfg, self.cfg_ds, addparams)
 		#~ rawResults = SearchModule.performSearch('', self.cfg, None, addparams)
